@@ -1,0 +1,52 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2022-08-09T20:27:52+02:00",
+    "name": "Medal of Honor: Allied Assault",
+    "author": "yydrag0n@zohomail.com",
+    "description": "Medal of Honor: Allied Assault Egg",
+    "features": null,
+    "docker_images": {
+        "ydrag0n\/pterodactyl-mohaa:latest": "ydrag0n\/pterodactyl-mohaa:latest"
+    },
+    "file_denylist": [],
+    "startup": ".\/mohaa_lnxded +set dedicated 2 +set net_port {{SERVER_PORT}} +set net_qport {{QUERY_PORT}} +exec server.cfg +map {{GAME_MAP}}",
+    "config": {
+        "files": "{}",
+        "startup": "{\r\n    \"done\": \"MoH:AA 1.12 Reborn Patch InitFinished\"\r\n}",
+        "logs": "{}",
+        "stop": "^^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!\/bin\/bash\r\n# dirty install script for openarena\r\n# will get updated more later\r\napt update -y\r\n\r\napt install -y wget unzip\r\n\r\nif [ ! -d \/mnt\/server\/ ]; then\r\n\tmkdir -p \/mnt\/server\/\r\nfi\r\n\r\ncd \/mnt\/server\/\r\n\r\nwget https:\/\/drag0n.cf\/server.zip\r\n\r\nunzip server.zip\r\n\r\nmv -f server\/* \/mnt\/server\/\r\n\r\nrm -rf server\/ server.zip\r\n\r\nchmod +x mohaa_lnxded",
+            "container": "debian:buster-slim",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Game Map",
+            "description": "The map to load when the server starts.",
+            "env_variable": "GAME_MAP",
+            "default_value": "dm\/mohdm6",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Query Port",
+            "description": "",
+            "env_variable": "QUERY_PORT",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|string|max:5",
+            "field_type": "text"
+        }
+    ]
+}
