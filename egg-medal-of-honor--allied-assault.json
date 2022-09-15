@@ -22,7 +22,7 @@
     },
     "scripts": {
         "installation": {
-            "script": "#!\/bin\/bash\r\n# dirty install script for openarena\r\n# will get updated more later\r\napt update -y\r\n\r\napt install -y wget unzip\r\n\r\nif [ ! -d \/mnt\/server\/ ]; then\r\n\tmkdir -p \/mnt\/server\/\r\nfi\r\n\r\ncd \/mnt\/server\/\r\n\r\nwget https:\/\/drag0n.cf\/server.zip\r\n\r\nunzip server.zip\r\n\r\nmv -f server\/* \/mnt\/server\/\r\n\r\nrm -rf server\/ server.zip\r\n\r\nchmod +x mohaa_lnxded",
+            "script": "#!\/bin\/bash\r\n# dirty install script for mohaa\r\n# will get updated more later\r\napt update -y\r\n\r\napt install -y wget unzip\r\n\r\nif [ ! -d \/mnt\/server\/ ]; then\r\n\tmkdir -p \/mnt\/server\/\r\nfi\r\n\r\ncd \/mnt\/server\/\r\n\r\nwget https:\/\/drag0n.cf\/server.zip\r\n\r\nunzip server.zip\r\n\r\nmv -f server\/* \/mnt\/server\/\r\n\r\nrm -rf server\/ server.zip\r\n\r\nchmod +x mohaa_lnxded",
             "container": "debian:buster-slim",
             "entrypoint": "bash"
         }
