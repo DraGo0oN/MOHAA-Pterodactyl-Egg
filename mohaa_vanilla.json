@@ -1,0 +1,122 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2024-12-10T00:22:02+02:00",
+    "name": "mohaa",
+    "author": "mrnitro2017@gmail.com",
+    "description": "Medal of Honor: Allied Assault Server (Reborn Patch)",
+    "features": null,
+    "docker_images": {
+        "quay.io\/ydrag0n\/mohaa": "quay.io\/ydrag0n\/mohaa"
+    },
+    "file_denylist": [],
+    "startup": ".\/mohaa_lnxded +set sv_punkbuster 0 +set fs_basepath {{BASE_PATH}} +set fs_outputpath {{LOG_DIR}} +set dedicated 2 +set sv_maxclients {{SERVER_MAXCLIENTS}} +set net_ip 0.0.0.0 +set net_port {{SERVER_PORT}} +set net_qport {{SERVER_QUERY_PORT}}  +exec server.cfg",
+    "config": {
+        "files": "{\r\n    \"main\/server.cfg\": {\r\n        \"parser\": \"file\",\r\n        \"find\": {\r\n            \"seta sv_hostname\": \"seta sv_hostname \\\"{{env.SERVER_NAME}}\\\"\",\r\n            \"seta sv_maxClients\": \"seta sv_maxClients \\\"{{env.SERVER_MAXCLIENTS}}\\\"\",\r\n            \"seta rconPassword\": \"seta rconPassword \\\"{{env.RCON_PASSWORD}}\\\"\",\r\n            \"seta g_password\": \"seta g_password \\\"{{env.SERVER_PASSWORD}}\\\"\",\r\n            \"map\": \"map {{env.SERVER_MAP}}\"\r\n        }\r\n    }\r\n}",
+        "startup": "{\r\n    \"done\": \"------ Server Initialization Complete ------\"\r\n}",
+        "logs": "{}",
+        "stop": "quit"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!\/bin\/bash\r\n\r\n# Define constants\r\nSERVER_DIR=\"\/mnt\/server\"\r\nDOWNLOAD_URL=\"https:\/\/moh.ftp.sh\/data\/MOHAA_MINI_LINUX.zip\"\r\nDOWNLOAD_FILE=\"mohaaserver.zip\"\r\nSERVER_EXE=\".\/mohaa_lnxded\"\r\n\r\n# Function to log messages with timestamps\r\nlog_message() {\r\n    echo -e \"[$(date +'%Y-%m-%d %H:%M:%S')] $1\"\r\n}\r\n\r\n# Function to check if a URL is valid\r\ncheck_url() {\r\n    if curl --output \/dev\/null --silent --head --fail \"$1\"; then\r\n        return 0\r\n    else\r\n        return 1\r\n    fi\r\n}\r\n\r\n# Function to download a file from a URL\r\ndownload_file() {\r\n    local url=\"$1\"\r\n    local output=\"$2\"\r\n    if curl -sSL \"$url\" -o \"$output\"; then\r\n        log_message \"Successfully downloaded $output\"\r\n        return 0\r\n    else\r\n        log_message \"Failed to download $output\"\r\n        return 1\r\n    fi\r\n}\r\n\r\n# Create server directory\r\nif ! mkdir -p \"$SERVER_DIR\"; then\r\n    log_message \"Failed to create server directory\"\r\n    exit 1\r\nfi\r\n\r\n# Change to the server directory\r\ncd \"$SERVER_DIR\" || { log_message \"Failed to change directory to $SERVER_DIR\"; exit 1; }\r\n\r\n# Validate download URL\r\nif [[ -n \"$DOWNLOAD_URL\" ]]; then\r\n    if check_url \"$DOWNLOAD_URL\"; then\r\n        DOWNLOAD_LINK=\"$DOWNLOAD_URL\"\r\n    else\r\n        log_message \"Invalid download URL. Exiting.\"\r\n        exit 2\r\n    fi\r\nelse\r\n    log_message \"DOWNLOAD_URL is not set. Exiting.\"\r\n    exit 3\r\nfi\r\n\r\n# Download server files\r\nif ! download_file \"$DOWNLOAD_LINK\" \"$DOWNLOAD_FILE\"; then\r\n    exit 4\r\nfi\r\n\r\n# Unpack server files\r\nlog_message \"Unpacking server files\"\r\nif ! unzip \"$DOWNLOAD_FILE\"; then\r\n    log_message \"Failed to unzip server files\"\r\n    exit 5\r\nfi\r\n\r\n# Clean up downloaded zip file\r\nrm \"$DOWNLOAD_FILE\"\r\n\r\n# Check for and download server configuration if not present\r\nif [[ ! -f main\/server.cfg ]]; then\r\n    log_message \"Downloading default server configuration\"\r\n    if ! download_file \"$CONFIG_URL\" \"main\/server.cfg\"; then\r\n        log_message \"Failed to download server configuration\"\r\n    fi\r\nfi\r\n\r\n# Make the server executable\r\nlog_message \"Making $SERVER_EXE executable\"\r\nif ! chmod +x \"$SERVER_EXE\"; then\r\n    log_message \"Failed to make $SERVER_EXE executable\"\r\n    exit 6\r\nfi\r\n\r\n# Installation complete message\r\nlog_message \"Installation completed successfully\"",
+            "container": "quay.io\/ydrag0n\/mohaa",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Server Query Port",
+            "description": "Server query port (required to make your server listed on the game master server list).\r\n(SERVER_PORT+97)",
+            "env_variable": "SERVER_QUERY_PORT",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string|max:5",
+            "field_type": "text"
+        },
+        {
+            "name": "Max clients",
+            "description": "",
+            "env_variable": "SERVER_MAXCLIENTS",
+            "default_value": "14",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer",
+            "field_type": "text"
+        },
+        {
+            "name": "Config URL",
+            "description": "URL from where to get the initial server.cfg",
+            "env_variable": "CONFIG_URL",
+            "default_value": "https:\/\/raw.githubusercontent.com\/ysdragon\/MOHAA-Pterodactyl-Egg\/refs\/heads\/main\/server.cfg",
+            "user_viewable": false,
+            "user_editable": false,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Server name",
+            "description": "The name of the server",
+            "env_variable": "SERVER_NAME",
+            "default_value": "MOHAA Server running on Pterodactyl",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Rcon password",
+            "description": "Admin password for rcon",
+            "env_variable": "RCON_PASSWORD",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Server map",
+            "description": "Select the map",
+            "env_variable": "SERVER_MAP",
+            "default_value": "obj\/obj_team2",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|in:obj\/obj_team2,dm\/mohdm7,dm\/mohdm1,dm\/mohdm3,dm\/mohdm2,dm\/mohdm6",
+            "field_type": "text"
+        },
+        {
+            "name": "Logs dir",
+            "description": "",
+            "env_variable": "LOG_DIR",
+            "default_value": "\/home\/container\/Logs",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Base PATH",
+            "description": "",
+            "env_variable": "BASE_PATH",
+            "default_value": "\/home\/container",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Server password",
+            "description": "",
+            "env_variable": "SERVER_PASSWORD",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "field_type": "text"
+        }
+    ]
+}
